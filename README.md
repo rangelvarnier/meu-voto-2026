@@ -46,7 +46,9 @@ Nesse caso as posições de governador e senador em `posicoes.ts` precisam ser l
 | `src/data/posicoes.ts` | Posição de cada candidato por tema (−2 a +2), com trecho e fonte |
 | `src/data/propostas.ts` | Resumo das propostas (áreas e destaques) de quem entregou plano ao TSE |
 | `src/data/tse.json` | Candidaturas oficiais, com cidade de nascimento e eleições municipais anteriores (gerado pelo script) |
-| `src/lib/match.ts` | Cálculo de afinidade, ranking e estimativa por partido |
+| `src/lib/match.ts` | Cálculo de afinidade, ranking, cobertura e estimativa por partido |
+| `src/lib/sugestao.ts` | Link de “sugerir fonte” (issue pré-preenchida) |
+| `scripts/cobertura.ts` | Relatório de cobertura das posições (`npm run cobertura`) |
 | `src/components/` | Quiz, Resultados, Deputados, Perfil (propostas e posições) e Comparar (favoritos) |
 
 ## Curadoria das posições
@@ -58,6 +60,17 @@ Nesse caso as posições de governador e senador em `posicoes.ts` precisam ser l
 - Candidatos ao Senado não entregam plano. A opção "completar com o partido", desligada por padrão, usa o plano do
   presidenciável do mesmo partido e marca essas posições como *do partido*.
 - Pablo Marçal (PRTB) aparece como indeferido e substituído por Leonardo Avalanche.
+
+### Cobertura e sugestões de fonte
+
+```bash
+npm run cobertura
+```
+
+Mostra quantos temas cada candidato a Presidente, Governador e Senador tem com fonte, o que falta e os temas menos
+cobertos, para priorizar a pesquisa. No app, a cobertura aparece no perfil, nos cartões de resultado e na comparação de
+favoritos. Cada tema sem posição tem um link “sugerir fonte”, que abre uma issue no GitHub já preenchida com o candidato
+e o tema (`.github/ISSUE_TEMPLATE/posicao.yml`). A curadoria confere a fonte antes de incluir em `posicoes.ts`.
 - Levantamento feito em 29/09/2026. Posições podem mudar durante a campanha.
 
 ### Como corrigir ou adicionar uma posição

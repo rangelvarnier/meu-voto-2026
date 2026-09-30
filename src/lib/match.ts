@@ -110,6 +110,18 @@ export function posicoesDe(c: Candidato, usarPartido: boolean): Record<string, P
   return out
 }
 
+/** Temas do escopo do cargo (deputados usam os nacionais). */
+export const temasDoCargo = (cargo: Cargo) =>
+  TEMAS.filter((t) => t.escopo === (cargo === 'governador' || cargo === 'deputado_estadual' ? 'estadual' : 'nacional'))
+
+/** Quantos temas do cargo têm posição registrada para o candidato. */
+export function cobertura(c: Candidato, usarPartido: boolean) {
+  const pos = posicoesDe(c, usarPartido)
+  const temas = temasDoCargo(c.cargo)
+  const com = temas.filter((t) => pos[t.id])
+  return { com: com.length, total: temas.length, faltando: temas.filter((t) => !pos[t.id]) }
+}
+
 export interface Comparacao {
   temaId: string
   eleitor: Resposta

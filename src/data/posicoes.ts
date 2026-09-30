@@ -128,6 +128,9 @@ export const POSICOES: Record<string, Partial<Record<string, Posicao>>> = {
     cotas: { v: -2, trecho: '"Substituir o sistema de cotas por um sistema de bolsas de mérito."', fonte: P.renan },
     bolsaFamilia: { v: -2, trecho: 'Substituir o Bolsa Família por frentes de trabalho remuneradas para quem está em idade ativa.', fonte: P.renan },
     reduzirImpostos: { v: 1, trecho: 'Reformas para liberar "espaço fiscal para investimentos e redução de impostos".', fonte: P.renan },
+    privatizacao: { v: 1, trecho: 'Propõe privatizar os Correios.', fonte: P.renan },
+    armas: { v: 1, trecho: 'Propõe ampliar o acesso da população a armas.', fonte: P.renan },
+    maioridade: { v: 2, trecho: 'Propõe reduzir a maioridade penal.', fonte: P.renan },
     anistia: {
       v: 1,
       trecho: 'Diz que os presos do 8/1 "merecem anistia", mas que Bolsonaro deve ser preso.',

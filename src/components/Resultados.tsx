@@ -3,6 +3,7 @@ import { TEMAS } from '../data/temas'
 import { FORA_DA_DISPUTA } from '../data/posicoes'
 import {
   CANDIDATOS,
+  cobertura,
   MIN_TEMAS_COMPARADOS,
   PESO_NEUTRO,
   UF,
@@ -14,6 +15,7 @@ import { OPCOES } from '../lib/opcoes'
 import { Deputados } from './Deputados'
 import { Estrela } from './Estrela'
 import { useApp } from '../lib/contexto'
+import { urlSugerirFonte } from '../lib/sugestao'
 
 type Aba = 'presidente' | 'governador' | 'senador' | 'deputado_federal' | 'deputado_estadual'
 
@@ -107,7 +109,7 @@ function Ranking({ cargo, respostas, usarPartido }: { cargo: 'presidente' | 'gov
       <ol className="lista">
         {suficientes.map((r) => (
           <li key={r.candidato.sq}>
-            <Card r={r} />
+            <Card r={r} usarPartido={usarPartido} />
           </li>
         ))}
       </ol>
@@ -123,7 +125,7 @@ function Ranking({ cargo, respostas, usarPartido }: { cargo: 'presidente' | 'gov
           <ul className="lista">
             {insuficientes.map((r) => (
               <li key={r.candidato.sq}>
-                <Card r={r} discreto />
+                <Card r={r} usarPartido={usarPartido} discreto />
               </li>
             ))}
           </ul>
@@ -142,10 +144,11 @@ function Ranking({ cargo, respostas, usarPartido }: { cargo: 'presidente' | 'gov
   )
 }
 
-function Card({ r, discreto = false }: { r: Resultado; discreto?: boolean }) {
+function Card({ r, usarPartido, discreto = false }: { r: Resultado; usarPartido: boolean; discreto?: boolean }) {
   const [aberto, setAberto] = useState(false)
   const { abrirPerfil } = useApp()
   const c = r.candidato
+  const cob = cobertura(c, usarPartido)
   return (
     <article className={`card ${discreto ? 'discreto' : ''}`}>
       <div className="card-linha">
@@ -204,6 +207,12 @@ function Card({ r, discreto = false }: { r: Resultado; discreto?: boolean }) {
               </a>
             </div>
           ))}
+          <p className="nota">
+            Posição registrada em {cob.com} de {cob.total} temas.{' '}
+            <a href={urlSugerirFonte(c)} target="_blank" rel="noreferrer">
+              Conhece uma fonte? Sugira
+            </a>
+          </p>
           <p className="nota">
             {c.nomeCompleto} · {c.ocupacao}
             {r.mediaSimples != null && ` · média simples: ${r.mediaSimples}%`}
