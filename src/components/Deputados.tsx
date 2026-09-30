@@ -1,6 +1,17 @@
 import { useMemo, useState } from 'react'
 import { VOTOS_6X1, FONTE_VOTOS_6X1 } from '../data/posicoes'
-import { CANDIDATOS, UF, estimativaPorPartido, type Respostas } from '../lib/match'
+import {
+  CANDIDATOS,
+  CIDADES,
+  UF,
+  estimativaPorPartido,
+  ligadoACidade,
+  semAcento,
+  type CriterioCidade,
+  type Respostas,
+} from '../lib/match'
+import { useApp } from '../lib/contexto'
+import { Estrela } from './Estrela'
 
 interface Props {
   cargo: 'deputado_federal' | 'deputado_estadual'
@@ -14,6 +25,9 @@ export function Deputados({ cargo, respostas }: Props) {
   const [partido, setPartido] = useState('')
   const [ordem, setOrdem] = useState<'afinidade' | 'nome' | 'numero'>('afinidade')
   const [limite, setLimite] = useState(POR_PAGINA)
+  const [cidade, setCidade] = useState('')
+  const [criterio, setCriterio] = useState<CriterioCidade>('ambos')
+  const { abrirPerfil } = useApp()
 
   const lista = useMemo(() => CANDIDATOS.filter((c) => c.cargo === cargo), [cargo])
 
@@ -26,20 +40,20 @@ export function Deputados({ cargo, respostas }: Props) {
   const partidos = [...porPartido.entries()].sort((a, b) => (b[1].afinidade ?? -1) - (a[1].afinidade ?? -1) || a[0].localeCompare(b[0]))
 
   const filtrados = useMemo(() => {
-    const q = busca
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/\p{M}/gu, '')
-    const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '')
+    const q = semAcento(busca.trim())
     return lista
-      .filter((c) => (!partido || c.partido === partido) && (!q || norm(`${c.nome} ${c.nomeCompleto} ${c.numero} ${c.ocupacao}`).includes(q)))
+      .filter(
+        (c) =>
+          (!partido || c.partido === partido) &&
+          ligadoACidade(c, cidade, criterio) &&
+          (!q || semAcento(`${c.nome} ${c.nomeCompleto} ${c.numero} ${c.ocupacao}`).includes(q)),
+      )
       .sort((a, b) => {
         if (ordem === 'nome') return a.nome.localeCompare(b.nome)
         if (ordem === 'numero') return a.numero.localeCompare(b.numero)
         return (porPartido.get(b.partido)?.afinidade ?? -1) - (porPartido.get(a.partido)?.afinidade ?? -1) || a.nome.localeCompare(b.nome)
       })
-  }, [lista, busca, partido, ordem, porPartido])
+  }, [lista, busca, partido, ordem, porPartido, cidade, criterio])
 
   return (
     <section className="deputados">
@@ -62,6 +76,11 @@ export function Deputados({ cargo, respostas }: Props) {
         ))}
       </div>
 
+      <p className="nota">
+        O TSE não divulga a cidade de residência dos candidatos em dados abertos. Por isso usamos a{' '}
+        <b>cidade de nascimento</b> e as cidades onde a pessoa <b>já concorreu a vereador, prefeito ou vice</b>, que costumam
+        indicar a base eleitoral. Quem nunca disputou eleição municipal aparece só pela cidade de nascimento.
+      </p>
       <div className="filtros">
         <input
           type="search"
@@ -77,9 +96,30 @@ export function Deputados({ cargo, respostas }: Props) {
           <option value="nome">Ordenar: nome</option>
           <option value="numero">Ordenar: número</option>
         </select>
+        <input
+          type="search"
+          list="cidades-sc"
+          placeholder="Cidade (ex.: Chapecó)"
+          value={cidade}
+          onChange={(e) => {
+            setCidade(e.target.value)
+            setLimite(POR_PAGINA)
+          }}
+          aria-label="Filtrar por cidade"
+        />
+        <datalist id="cidades-sc">
+          {CIDADES.map((c) => (
+            <option key={c} value={c} />
+          ))}
+        </datalist>
+        <select value={criterio} onChange={(e) => setCriterio(e.target.value as CriterioCidade)} aria-label="Critério da cidade">
+          <option value="ambos">Cidade: nasceu ou já disputou</option>
+          <option value="nascimento">Cidade: onde nasceu</option>
+          <option value="disputas">Cidade: onde já disputou eleição</option>
+        </select>
         {partido && (
           <button className="link" onClick={() => setPartido('')}>
-            Limpar filtro ({partido})
+            Limpar partido ({partido})
           </button>
         )}
       </div>
@@ -91,12 +131,25 @@ export function Deputados({ cargo, respostas }: Props) {
           const voto = VOTOS_6X1[c.sq]
           return (
             <li key={c.sq}>
+              <Estrela sq={c.sq} nome={c.nome} />
               <span className="numero">{c.numero}</span>
               <span className="quem">
-                <strong>{c.nome}</strong>
+                <button className="link nome" onClick={() => abrirPerfil(c.sq)}>
+                  {c.nome}
+                </button>
                 <small>
                   {c.partido}
                   {c.federacao && ` (${c.federacao})`} · {c.ocupacao}
+                </small>
+                <small className="cidades">
+                  {c.nascimento && <>Nasceu em {c.nascimento}</>}
+                  {c.disputas?.[0] && (
+                    <>
+                      {c.nascimento && ' · '}
+                      Última disputa: {c.disputas[0].cargo} em {c.disputas[0].cidade} ({c.disputas[0].ano}
+                      {c.disputas[0].resultado && `, ${c.disputas[0].resultado.toLowerCase()}`})
+                    </>
+                  )}
                 </small>
                 {voto && (
                   <small className="voto">

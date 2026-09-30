@@ -7,3 +7,11 @@ export const OPCOES: { v: Resposta['v']; rotulo: string }[] = [
   { v: 1, rotulo: 'Concordo' },
   { v: 2, rotulo: 'Concordo totalmente' },
 ]
+
+/** Como a posição de um candidato é descrita (3ª pessoa). */
+export const ROTULO_CANDIDATO: Record<number, string> = {
+  [-2]: 'Discorda totalmente',
+  [-1]: 'Discorda',
+  [1]: 'Concorda',
+  [2]: 'Concorda totalmente',
+}

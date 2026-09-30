@@ -14,7 +14,10 @@ import zipfile
 from datetime import date
 from pathlib import Path
 
-URL = "https://cdn.tse.jus.br/estatistica/sead/odsele/consulta_cand/consulta_cand_2026.zip"
+BASE = "https://cdn.tse.jus.br/estatistica/sead/odsele"
+URL = f"{BASE}/consulta_cand/consulta_cand_2026.zip"
+URL_COMPL = f"{BASE}/consulta_cand_complementar/consulta_cand_complementar_2026.zip"
+URL_HIST = f"{BASE}/historico_candidatura/historico_candidatura_2026.zip"
 UF = (sys.argv[1] if len(sys.argv) > 1 else "SC").upper()
 SAIDA = Path(__file__).resolve().parent.parent / "src" / "data" / "tse.json"
 
@@ -38,10 +41,50 @@ def titulo(s: str) -> str:
     return " ".join(p if p.lower() in minusc else p.capitalize() for p in s.lower().split())
 
 
+def baixar(url: str) -> zipfile.ZipFile:
+    print(f"Baixando {url} …")
+    return zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(url, timeout=180).read()))
+
+
+def nascimentos(uf: str) -> dict:
+    """SQ_CANDIDATO -> cidade de nascimento (arquivo complementar do TSE)."""
+    zf = baixar(URL_COMPL)
+    out = {}
+    for arquivo in ("consulta_cand_complementar_2026_BR.csv", f"consulta_cand_complementar_2026_{uf}.csv"):
+        for r in ler(zf, arquivo):
+            cidade = r["NM_MUNICIPIO_NASCIMENTO"]
+            if cidade and not cidade.startswith("#"):
+                out[r["SQ_CANDIDATO"]] = titulo(cidade)
+    return out
+
+
+def disputas_municipais(uf: str) -> dict:
+    """SQ_CANDIDATO -> eleições municipais anteriores (cargo, ano, cidade, resultado).
+
+    O TSE não publica o domicílio eleitoral em dados abertos; as cidades onde a pessoa
+    já concorreu a vereador, prefeito ou vice são o melhor indício público de base local.
+    """
+    zf = baixar(URL_HIST)
+    out: dict = {}
+    for r in ler(zf, f"historico_candidatura_2026_{uf}.csv"):
+        if r["TP_ABRANGENCIA_ELEICAO"] != "M" or r["ANO_ELEICAO"] == "2026":
+            continue
+        resultado = r["DS_SIT_TOT_TURNO"]
+        out.setdefault(r["SQ_CANDIDATO_ATUAL"], []).append({
+            "ano": int(r["ANO_ELEICAO"]),
+            "cargo": titulo(r["DS_CARGO"]),
+            "cidade": titulo(r["NM_UE"]),
+            "resultado": "" if resultado.startswith("#") else resultado,
+        })
+    for lista in out.values():
+        lista.sort(key=lambda d: -d["ano"])
+    return out
+
+
 def main():
-    print(f"Baixando {URL} …")
-    dados = urllib.request.urlopen(URL, timeout=120).read()
-    zf = zipfile.ZipFile(io.BytesIO(dados))
+    zf = baixar(URL)
+    nasc = nascimentos(UF)
+    disputas = disputas_municipais(UF)
 
     candidatos, vices = [], {}
     for arquivo in (f"consulta_cand_2026_BR.csv", f"consulta_cand_2026_{UF}.csv"):
@@ -69,6 +112,10 @@ def main():
             })
 
     for c in candidatos:
+        if c["sq"] in nasc:
+            c["nascimento"] = nasc[c["sq"]]
+        if c["sq"] in disputas:
+            c["disputas"] = disputas[c["sq"]]
         # Um candidato substituto pode ter sido vice do titular original: descarta o próprio nome
         opcoes = [v for v in vices.get((c["cargo"], c["numero"]), []) if v != c["nome"]]
         if opcoes:

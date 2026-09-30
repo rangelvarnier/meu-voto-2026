@@ -34,7 +34,7 @@ Não há variáveis de ambiente nem backend: é um site estático.
 python3 scripts/importar_tse.py SC
 ```
 
-O script baixa `consulta_cand_2026.zip` dos [Dados Abertos do TSE](https://dadosabertos.tse.jus.br/dataset/candidatos-2026)
+O script baixa `consulta_cand_2026.zip`, o arquivo complementar (cidade de nascimento) e o histórico de candidaturas dos [Dados Abertos do TSE](https://dadosabertos.tse.jus.br/dataset/candidatos-2026)
 e regrava `src/data/tse.json`, só com campos públicos (sem CPF, e-mail ou título). Para outro estado, troque `SC` pela UF.
 Nesse caso as posições de governador e senador em `posicoes.ts` precisam ser levantadas de novo.
 
@@ -44,9 +44,10 @@ Nesse caso as posições de governador e senador em `posicoes.ts` precisam ser l
 | --- | --- |
 | `src/data/temas.ts` | As 22 afirmações do quiz (escopo nacional ou estadual) |
 | `src/data/posicoes.ts` | Posição de cada candidato por tema (−2 a +2), com trecho e fonte |
-| `src/data/tse.json` | Candidaturas oficiais (gerado pelo script) |
+| `src/data/propostas.ts` | Resumo das propostas (áreas e destaques) de quem entregou plano ao TSE |
+| `src/data/tse.json` | Candidaturas oficiais, com cidade de nascimento e eleições municipais anteriores (gerado pelo script) |
 | `src/lib/match.ts` | Cálculo de afinidade, ranking e estimativa por partido |
-| `src/components/` | Quiz, Resultados e Deputados |
+| `src/components/` | Quiz, Resultados, Deputados, Perfil (propostas e posições) e Comparar (favoritos) |
 
 ## Curadoria das posições
 
@@ -74,3 +75,10 @@ importantes valem 2) somada a 2 "temas neutros" de 50%, para que candidatos com 
 Quem tem menos de 3 temas em comum com as respostas aparece em uma seção separada.
 
 **Não é recomendação de voto.**
+
+## Favoritos, perfil e cidade
+
+- **Favoritos** (★) ficam só no navegador (`localStorage`) e alimentam a tela *Comparar*, com uma coluna por candidato.
+- **Perfil**: propostas do plano, posições por tema com fonte, votação na PEC da 6x1 (deputados) e histórico municipal.
+- **Cidade dos deputados**: o TSE não divulga o domicílio eleitoral em dados abertos. O app usa a cidade de nascimento e as
+  cidades onde a pessoa já concorreu a vereador, prefeito ou vice. É um indício de base eleitoral, não a residência.

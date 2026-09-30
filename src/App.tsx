@@ -1,13 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Quiz } from './components/Quiz'
 import { Resultados } from './components/Resultados'
+import { Comparar } from './components/Comparar'
+import { Perfil } from './components/Perfil'
+import { Ctx, type Contexto } from './lib/contexto'
 import type { Respostas } from './lib/match'
 import { TSE_GERADO_EM, UF } from './lib/match'
 import { TEMAS } from './data/temas'
 import './App.css'
 
-type Etapa = 'inicio' | 'quiz' | 'resultado'
+type Etapa = 'inicio' | 'quiz' | 'resultado' | 'comparar'
 const CHAVE = 'meu-voto-2026:respostas'
+const CHAVE_FAV = 'meu-voto-2026:favoritos'
+
+function carregarFavoritos(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(CHAVE_FAV) ?? '[]')
+    return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
 
 function carregar(): Respostas {
   try {
@@ -20,6 +33,31 @@ function carregar(): Respostas {
 export default function App() {
   const [respostas, setRespostas] = useState<Respostas>(carregar)
   const [etapa, setEtapa] = useState<Etapa>(() => (Object.keys(carregar()).length ? 'resultado' : 'inicio'))
+
+  const [favoritos, setFavoritos] = useState<string[]>(carregarFavoritos)
+  const [perfil, setPerfil] = useState<string | null>(null)
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHAVE_FAV, JSON.stringify(favoritos))
+    } catch {
+      /* segue sem salvar */
+    }
+  }, [favoritos])
+
+  const alternarFavorito = useCallback(
+    (sq: string) => setFavoritos((f) => (f.includes(sq) ? f.filter((x) => x !== sq) : [...f, sq])),
+    [],
+  )
+  const contexto = useMemo<Contexto>(
+    () => ({
+      favoritos,
+      ehFavorito: (sq) => favoritos.includes(sq),
+      alternarFavorito,
+      abrirPerfil: setPerfil,
+    }),
+    [favoritos, alternarFavorito],
+  )
 
   useEffect(() => {
     try {
@@ -34,12 +72,18 @@ export default function App() {
   }, [etapa])
 
   return (
+    <Ctx.Provider value={contexto}>
     <div className="app">
       <header className="topo">
         <button className="marca" onClick={() => setEtapa('inicio')}>
           Meu Voto <span>2026</span>
         </button>
-        <span className="uf">Brasil · {UF}</span>
+        <nav className="topo-nav">
+          <button className={`link ${etapa === 'comparar' ? 'atual' : ''}`} onClick={() => setEtapa('comparar')}>
+            ★ Favoritos ({favoritos.length})
+          </button>
+          <span className="uf">Brasil · {UF}</span>
+        </nav>
       </header>
 
       {etapa === 'inicio' && (
@@ -95,6 +139,10 @@ export default function App() {
         />
       )}
 
+      {etapa === 'comparar' && <Comparar respostas={respostas} />}
+
+      {perfil && <Perfil sq={perfil} respostas={respostas} onFechar={() => setPerfil(null)} />}
+
       <footer className="rodape">
         <p>
           Projeto independente, sem vínculo com partidos, candidatos ou com o TSE. Não é recomendação de voto. Suas
@@ -113,5 +161,6 @@ export default function App() {
         </p>
       </footer>
     </div>
+    </Ctx.Provider>
   )
 }

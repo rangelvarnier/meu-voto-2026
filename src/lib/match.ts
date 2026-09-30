@@ -1,6 +1,6 @@
 import tse from '../data/tse.json'
 import { TEMAS, type Escopo } from '../data/temas'
-import { POSICOES, FORA_DA_DISPUTA, type Posicao } from '../data/posicoes'
+import { POSICOES, FORA_DA_DISPUTA, VOTOS_6X1, FONTE_VOTOS_6X1, type Posicao } from '../data/posicoes'
 
 export type Cargo = 'presidente' | 'governador' | 'senador' | 'deputado_federal' | 'deputado_estadual'
 
@@ -17,9 +17,29 @@ export interface Candidato {
   ocupacao: string
   genero: string
   vice?: string
+  nascimento?: string
+  disputas?: Disputa[]
+}
+
+/** Eleição municipal anterior (vereador, prefeito ou vice), segundo o histórico do TSE. */
+export interface Disputa {
+  ano: number
+  cargo: string
+  cidade: string
+  resultado: string
+}
+
+export const ROTULO_CARGO: Record<Cargo, string> = {
+  presidente: 'Presidente',
+  governador: 'Governador',
+  senador: 'Senador',
+  deputado_federal: 'Deputado Federal',
+  deputado_estadual: 'Deputado Estadual',
 }
 
 export const CANDIDATOS = tse.candidatos as Candidato[]
+const POR_SQ = new Map(CANDIDATOS.map((c) => [c.sq, c]))
+export const candidatoPorSq = (sq: string) => POR_SQ.get(sq)
 export const UF = tse.uf
 export const TSE_GERADO_EM = tse.geradoEm
 
@@ -68,6 +88,17 @@ export function posicoesDe(c: Candidato, usarPartido: boolean): Record<string, P
   const out: Record<string, PosicaoUsada> = {}
   const proprias = POSICOES[c.sq] ?? {}
   for (const [tema, p] of Object.entries(proprias)) if (p) out[tema] = { ...p, origem: 'proprio' }
+
+  // Voto registrado na Câmara vale como posição própria e com fonte
+  const voto = VOTOS_6X1[c.sq]
+  if (voto && voto !== 'AUSENTE' && !out.fim6x1) {
+    out.fim6x1 = {
+      v: voto === 'SIM' ? 2 : -2,
+      trecho: `Votou ${voto} na PEC do fim da escala 6x1 (1º turno, 27/05/2026).`,
+      fonte: FONTE_VOTOS_6X1,
+      origem: 'proprio',
+    }
+  }
 
   if (usarPartido && c.cargo === 'senador') {
     const ref = PRESIDENCIAVEL_DO_PARTIDO.get(c.partido)
@@ -169,4 +200,28 @@ export function estimativaPorPartido(partido: string, respostas: Respostas): Est
     presidente: rp,
     governador: rg,
   }
+}
+
+// ─── Cidades (deputados) ────────────────────────────────────────
+
+export const semAcento = (s: string) => s.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '')
+
+/** Cidades citadas nos dados de deputados (nascimento ou eleições municipais anteriores). */
+export const CIDADES = [
+  ...new Set(
+    CANDIDATOS.filter((c) => c.cargo.startsWith('deputado')).flatMap((c) => [
+      ...(c.nascimento ? [c.nascimento] : []),
+      ...(c.disputas ?? []).map((d) => d.cidade),
+    ]),
+  ),
+].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+
+export type CriterioCidade = 'ambos' | 'nascimento' | 'disputas'
+
+export function ligadoACidade(c: Candidato, cidade: string, criterio: CriterioCidade) {
+  const q = semAcento(cidade.trim())
+  if (!q) return true
+  const nasceu = !!c.nascimento && semAcento(c.nascimento) === q
+  const disputou = (c.disputas ?? []).some((d) => semAcento(d.cidade) === q)
+  return criterio === 'nascimento' ? nasceu : criterio === 'disputas' ? disputou : nasceu || disputou
 }

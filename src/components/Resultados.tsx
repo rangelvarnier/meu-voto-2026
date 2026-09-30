@@ -12,6 +12,8 @@ import {
 } from '../lib/match'
 import { OPCOES } from '../lib/opcoes'
 import { Deputados } from './Deputados'
+import { Estrela } from './Estrela'
+import { useApp } from '../lib/contexto'
 
 type Aba = 'presidente' | 'governador' | 'senador' | 'deputado_federal' | 'deputado_estadual'
 
@@ -142,9 +144,12 @@ function Ranking({ cargo, respostas, usarPartido }: { cargo: 'presidente' | 'gov
 
 function Card({ r, discreto = false }: { r: Resultado; discreto?: boolean }) {
   const [aberto, setAberto] = useState(false)
+  const { abrirPerfil } = useApp()
   const c = r.candidato
   return (
     <article className={`card ${discreto ? 'discreto' : ''}`}>
+      <div className="card-linha">
+      <Estrela sq={c.sq} nome={c.nome} />
       <button className="card-topo" onClick={() => setAberto(!aberto)} aria-expanded={aberto}>
         <div className="numero">{c.numero}</div>
         <div className="quem">
@@ -168,6 +173,7 @@ function Card({ r, discreto = false }: { r: Resultado; discreto?: boolean }) {
           )}
         </div>
       </button>
+      </div>
       {r.afinidade != null && !discreto && (
         <div className="barra">
           <div style={{ width: `${r.afinidade}%` }} />
@@ -202,6 +208,7 @@ function Card({ r, discreto = false }: { r: Resultado; discreto?: boolean }) {
             {c.nomeCompleto} · {c.ocupacao}
             {r.mediaSimples != null && ` · média simples: ${r.mediaSimples}%`}
           </p>
+          <button onClick={() => abrirPerfil(c.sq)}>Ver perfil e propostas</button>
         </div>
       )}
     </article>
