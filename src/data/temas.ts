@@ -22,43 +22,45 @@ export const TEMAS: Tema[] = [
     id: 'fim6x1',
     escopo: 'nacional',
     titulo: 'Escala 6x1',
-    afirmacao: 'A escala 6x1 deve acabar, com redução da jornada sem redução de salário.',
-    contexto: 'A PEC foi aprovada na Câmara em maio de 2026 e aguarda o Senado.',
+    afirmacao: 'A escala 6x1 deve acabar.',
+    contexto: 'A PEC aprovada na Câmara em maio de 2026 reduz a jornada sem reduzir o salário e aguarda o Senado.',
   },
   {
     id: 'armas',
     escopo: 'nacional',
     titulo: 'Armas',
     afirmacao: 'O cidadão deve ter acesso mais fácil à posse e ao porte de armas.',
-    contexto: 'Envolve as regras para CACs, posse em casa e porte em propriedades rurais.',
+    contexto: 'Envolve as regras para CACs, posse em casa e porte em propriedades rurais. O presidente muda boa parte disso por decreto.',
   },
   {
     id: 'aborto',
     escopo: 'nacional',
     titulo: 'Aborto',
-    afirmacao: 'O aborto deve ser descriminalizado ou legalizado.',
-    contexto: 'Hoje é permitido só em caso de estupro, de risco à vida da gestante ou de anencefalia.',
+    afirmacao: 'O aborto deve deixar de ser crime.',
+    contexto:
+      'Hoje é permitido só em caso de estupro, de risco à vida da gestante ou de anencefalia. Depende do Congresso e do STF; o presidente propõe ou veta.',
   },
   {
     id: 'drogas',
     escopo: 'nacional',
     titulo: 'Drogas',
-    afirmacao: 'O uso de drogas deve ser descriminalizado.',
-    contexto: 'Inclui propostas de rever a Lei Antidrogas ou de legalizar a maconha.',
+    afirmacao: 'Portar drogas para uso pessoal deve deixar de ser crime.',
+    contexto: 'Em 2024 o STF decidiu que portar até 40 g de maconha para uso próprio não é crime. Mudar a Lei Antidrogas depende do Congresso.',
   },
   {
     id: 'anistia',
     escopo: 'nacional',
     titulo: 'Anistia do 8/1',
-    afirmacao: 'Os condenados pelos atos de 8 de janeiro de 2023 devem receber anistia ou indulto.',
-    contexto: 'Algumas candidaturas incluem Jair Bolsonaro na anistia e outras não. O detalhe aparece em cada posição.',
+    afirmacao: 'Os condenados pela trama golpista e pelos atos de 8 de janeiro devem ser perdoados (anistia ou indulto).',
+    contexto:
+      'A anistia é aprovada pelo Congresso; o indulto é dado pelo presidente. Algumas candidaturas incluem Jair Bolsonaro e outras não, e o detalhe aparece em cada posição.',
   },
   {
     id: 'maioridade',
     escopo: 'nacional',
     titulo: 'Maioridade penal',
     afirmacao: 'A maioridade penal deve ser reduzida (por exemplo, para 16 anos).',
-    contexto: 'Hoje, menores de 18 respondem pelo ECA, com medidas socioeducativas.',
+    contexto: 'Hoje, menores de 18 respondem pelo ECA. Mudar exige PEC, votada pela Câmara e pelo Senado, sem sanção do presidente.',
   },
   {
     id: 'taxarRicos',
@@ -71,8 +73,8 @@ export const TEMAS: Tema[] = [
     id: 'reduzirImpostos',
     escopo: 'nacional',
     titulo: 'Carga tributária',
-    afirmacao: 'A carga total de impostos deve cair, mesmo que isso exija cortar gastos públicos.',
-    contexto: 'Fala do tamanho total da arrecadação.',
+    afirmacao: 'A carga total de impostos deve cair.',
+    contexto: 'Fala do tamanho total da arrecadação, e não de quem paga. Reduzir a carga costuma exigir cortar gastos.',
   },
   {
     id: 'civicoMilitar',
@@ -103,18 +105,26 @@ export const TEMAS: Tema[] = [
     contexto: 'Quem discorda costuma ver risco de censura e defender menos moderação.',
   },
   {
+    id: 'clt',
+    escopo: 'nacional',
+    titulo: 'Regras de trabalho',
+    afirmacao: 'Deve ser permitido contratar com regras mais flexíveis que as da CLT, como pagamento por hora.',
+    contexto: 'Quem discorda costuma defender revogar a reforma trabalhista de 2017 e ampliar as proteções da CLT.',
+  },
+  {
     id: 'stf',
     escopo: 'nacional',
     titulo: 'Poderes do STF',
     afirmacao: 'Os poderes do STF devem ser limitados (mandato fixo, menos decisões individuais etc.).',
-    contexto: 'Inclui propostas de mandato fixo para ministros e de limite a decisões monocráticas.',
+    contexto:
+      'Inclui mandato fixo para ministros e limite a decisões individuais. Depende de PEC; o Senado também sabatina os indicados e julga ministros.',
   },
   {
     id: 'demarcacao',
     escopo: 'nacional',
     titulo: 'Terras indígenas',
-    afirmacao: 'Terras indígenas e quilombolas devem ser demarcadas, mesmo que isso limite a expansão agropecuária.',
-    contexto: 'Tem relação com o debate sobre o marco temporal.',
+    afirmacao: 'O governo deve continuar demarcando terras indígenas e quilombolas.',
+    contexto: 'Tem relação com o debate sobre o marco temporal e com a expansão agropecuária.',
   },
 
   // Estaduais: comparados com candidatos a Governador de SC
@@ -122,14 +132,14 @@ export const TEMAS: Tema[] = [
     id: 'privEstaduais',
     escopo: 'estadual',
     titulo: 'Casan e Celesc',
-    afirmacao: 'SC deve privatizar ou abrir o capital de estatais como Casan e Celesc.',
+    afirmacao: 'SC deve privatizar estatais como Casan e Celesc.',
     contexto: 'Casan cuida de água e esgoto. Celesc cuida de energia.',
   },
   {
     id: 'pedagio',
     escopo: 'estadual',
     titulo: 'Concessão de rodovias',
-    afirmacao: 'Obras e manutenção de rodovias devem ser concedidas à iniciativa privada, com pedágio se preciso.',
+    afirmacao: 'Rodovias devem ser concedidas à iniciativa privada, com cobrança de pedágio.',
     contexto: 'Quem discorda defende obras feitas com dinheiro público e sem pedágio.',
   },
   {
@@ -137,7 +147,7 @@ export const TEMAS: Tema[] = [
     escopo: 'estadual',
     titulo: 'Tarifa zero',
     afirmacao: 'O estado deve apoiar a tarifa zero (ônibus gratuito) no transporte coletivo.',
-    contexto: 'Envolve subsídio público ao transporte municipal e metropolitano.',
+    contexto: 'O transporte urbano é dos municípios. O estado pode financiar e cuida das linhas metropolitanas.',
   },
   {
     id: 'cameras',
@@ -158,14 +168,7 @@ export const TEMAS: Tema[] = [
     escopo: 'estadual',
     titulo: 'Impostos estaduais',
     afirmacao: 'SC deve reduzir a carga de impostos estaduais para atrair empresas.',
-    contexto: 'O principal imposto estadual é o ICMS.',
-  },
-  {
-    id: 'desmilitarizar',
-    escopo: 'estadual',
-    titulo: 'Polícia Militar',
-    afirmacao: 'A Polícia Militar deve ser desmilitarizada.',
-    contexto: 'Alterar o modelo depende também da Constituição Federal, mas o tema aparece em planos estaduais.',
+    contexto: 'O principal imposto estadual é o ICMS, que a reforma tributária substitui aos poucos pelo IBS entre 2029 e 2033.',
   },
 ]
 

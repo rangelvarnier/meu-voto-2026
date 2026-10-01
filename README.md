@@ -1,6 +1,6 @@
 # Meu Voto 2026
 
-Quiz em estilo "bússola eleitoral" para as eleições de 2026. Você responde 22 temas (15 nacionais e 7 estaduais) e o
+Quiz em estilo "bússola eleitoral" para as eleições de 2026. Você responde 16 temas nacionais, 6 estaduais ou os 22, e o
 app mostra sua concordância com os candidatos a **Presidente**, **Governador de SC** e **Senador por SC**, com o trecho
 e a fonte de cada posição. Para **deputados federais e estaduais de SC** traz a lista oficial do TSE, uma estimativa de
 afinidade pelo partido e, para quem já é deputado federal, o voto na PEC do fim da 6x1.
@@ -55,7 +55,11 @@ Nesse caso as posições de governador e senador em `posicoes.ts` precisam ser l
 
 - **Fontes aceitas**: o plano de governo registrado no TSE ou uma declaração/voto noticiado pela imprensa, com link.
   Nenhuma posição é deduzida por ideologia.
-- **Sem posição encontrada = tema fica fora do cálculo.** Não completamos lacunas.
+- **Sem posição encontrada = tema fica fora do cálculo.** Não completamos lacunas. Um plano que não fala do tema não
+  conta como discordância.
+- **Uma ideia por afirmação.** Afirmações com "e", "ou" e "mesmo que" foram desdobradas para que a posição registrada
+  responda exatamente ao que o eleitor responde. O contexto de cada tema diz quem decide de fato (presidente, Congresso,
+  STF, estado ou município).
 - Os planos de Jorginho Mello e Gelson Merísio são PDFs de imagem e foram lidos por OCR.
 - Candidatos ao Senado não entregam plano. A opção "completar com o partido", desligada por padrão, usa o plano do
   presidenciável do mesmo partido e marca essas posições como *do partido*.
