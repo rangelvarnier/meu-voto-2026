@@ -6,7 +6,7 @@ import { Perfil } from './components/Perfil'
 import { Ctx, type Contexto } from './lib/contexto'
 import type { Respostas } from './lib/match'
 import { TSE_GERADO_EM, UF } from './lib/match'
-import { TEMAS } from './data/temas'
+import { TEMAS, type Escopo } from './data/temas'
 import './App.css'
 
 type Etapa = 'inicio' | 'quiz' | 'resultado' | 'comparar'
@@ -22,17 +22,30 @@ function carregarFavoritos(): string[] {
   }
 }
 
+const IDS = new Set(TEMAS.map((t) => t.id))
+
+/** Descarta respostas de temas que saíram do quiz. */
 function carregar(): Respostas {
   try {
-    return JSON.parse(localStorage.getItem(CHAVE) ?? '{}')
+    const salvas: Respostas = JSON.parse(localStorage.getItem(CHAVE) ?? '{}')
+    return Object.fromEntries(Object.entries(salvas).filter(([id]) => IDS.has(id)))
   } catch {
     return {}
   }
 }
 
+type Bloco = Escopo | 'todos'
+const nTemas = (e: Escopo) => TEMAS.filter((t) => t.escopo === e).length
+
 export default function App() {
   const [respostas, setRespostas] = useState<Respostas>(carregar)
   const [etapa, setEtapa] = useState<Etapa>(() => (Object.keys(carregar()).length ? 'resultado' : 'inicio'))
+  const [bloco, setBloco] = useState<Bloco>('todos')
+  const temasDoBloco = useMemo(() => (bloco === 'todos' ? TEMAS : TEMAS.filter((t) => t.escopo === bloco)), [bloco])
+  const comecar = (b: Bloco) => {
+    setBloco(b)
+    setEtapa('quiz')
+  }
 
   const [favoritos, setFavoritos] = useState<string[]>(carregarFavoritos)
   const [perfil, setPerfil] = useState<string | null>(null)
@@ -90,7 +103,7 @@ export default function App() {
         <main className="inicio">
           <h1>Compare suas opiniões com as dos candidatos</h1>
           <p className="lead">
-            Diga o que você pensa sobre {TEMAS.length} temas. O app compara suas respostas com as posições que os candidatos
+            Diga o que você pensa sobre temas nacionais e de {UF}. O app compara suas respostas com as posições que os candidatos
             a Presidente, Governador e Senador de {UF} registraram nos planos de governo entregues ao TSE ou declararam
             publicamente. Toda posição mostra a fonte.
           </p>
@@ -109,12 +122,19 @@ export default function App() {
             </li>
             <li>Suas respostas ficam só neste navegador.</li>
           </ul>
+          <p className="lead">O que você quer comparar?</p>
           <div className="acoes">
-            <button className="primario" onClick={() => setEtapa('quiz')}>
-              {Object.keys(respostas).length ? 'Revisar respostas' : 'Começar'}
+            <button className="primario" onClick={() => comecar('nacional')}>
+              Presidente e Senado ({nTemas('nacional')} temas)
             </button>
+            <button className="primario" onClick={() => comecar('estadual')}>
+              Governador ({nTemas('estadual')} temas)
+            </button>
+            <button onClick={() => comecar('todos')}>Tudo ({TEMAS.length} temas)</button>
             {Object.keys(respostas).length > 0 && (
-              <button onClick={() => setEtapa('resultado')}>Ver resultado</button>
+              <button className="link" onClick={() => setEtapa('resultado')}>
+                Ver resultado
+              </button>
             )}
           </div>
           <p className="nota">
@@ -125,13 +145,13 @@ export default function App() {
       )}
 
       {etapa === 'quiz' && (
-        <Quiz respostas={respostas} onChange={setRespostas} onFim={() => setEtapa('resultado')} />
+        <Quiz key={bloco} temas={temasDoBloco} respostas={respostas} onChange={setRespostas} onFim={() => setEtapa('resultado')} />
       )}
 
       {etapa === 'resultado' && (
         <Resultados
           respostas={respostas}
-          onRefazer={() => setEtapa('quiz')}
+          onRefazer={() => comecar('todos')}
           onLimpar={() => {
             setRespostas({})
             setEtapa('inicio')

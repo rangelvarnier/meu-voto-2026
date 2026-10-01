@@ -1,20 +1,21 @@
 import { useState } from 'react'
-import { TEMAS } from '../data/temas'
+import type { Tema } from '../data/temas'
 import type { Resposta, Respostas } from '../lib/match'
 import { OPCOES } from '../lib/opcoes'
 import { UF } from '../lib/match'
 
 interface Props {
+  temas: Tema[]
   respostas: Respostas
   onChange: (r: Respostas) => void
   onFim: () => void
 }
 
-export function Quiz({ respostas, onChange, onFim }: Props) {
+export function Quiz({ temas, respostas, onChange, onFim }: Props) {
   const [i, setI] = useState(0)
-  const tema = TEMAS[i]
+  const tema = temas[i]
   const atual = respostas[tema.id]
-  const ultimo = i === TEMAS.length - 1
+  const ultimo = i === temas.length - 1
 
   const avancar = () => (ultimo ? onFim() : setI(i + 1))
 
@@ -31,11 +32,11 @@ export function Quiz({ respostas, onChange, onFim }: Props) {
 
   return (
     <main className="quiz">
-      <div className="progresso" aria-label={`Pergunta ${i + 1} de ${TEMAS.length}`}>
-        <div style={{ width: `${((i + 1) / TEMAS.length) * 100}%` }} />
+      <div className="progresso" aria-label={`Pergunta ${i + 1} de ${temas.length}`}>
+        <div style={{ width: `${((i + 1) / temas.length) * 100}%` }} />
       </div>
       <p className="etapa">
-        {i + 1} / {TEMAS.length} · {tema.escopo === 'nacional' ? 'Tema nacional (Presidente e Senado)' : `Tema estadual (Governo de ${UF})`}
+        {i + 1} / {temas.length} · {tema.escopo === 'nacional' ? 'Tema nacional (Presidente e Senado)' : `Tema estadual (Governo de ${UF})`}
       </p>
 
       <h2>{tema.titulo}</h2>

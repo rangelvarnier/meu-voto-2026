@@ -93,6 +93,7 @@ export const POSICOES: Record<string, Partial<Record<string, Posicao>>> = {
     stf: { v: 2, trecho: 'Limitar as decisões monocráticas do STF, privilegiando as colegiadas.', fonte: P.flavio },
     redes: { v: -2, trecho: 'Propõe um "Tesouraço na Censura" para garantir a liberdade de criticar sem medo.', fonte: P.flavio },
     reduzirImpostos: { v: 1, trecho: 'Reduzir impostos sobre energia elétrica e combustíveis.', fonte: P.flavio },
+    clt: { v: 2, trecho: 'Pagamento por hora e mais flexibilidade na CLT.', fonte: P.flavio },
     anistia: {
       v: 2,
       trecho: 'Diz que buscará anistia para Jair Bolsonaro e condenados do 8/1 já na transição; senão, dará indulto.',
@@ -107,6 +108,7 @@ export const POSICOES: Record<string, Partial<Record<string, Posicao>>> = {
     reduzirImpostos: { v: 2, trecho: 'Metas progressivas de redução da carga tributária que imponham cortes de gastos.', fonte: P.zema },
     civicoMilitar: { v: 1, trecho: 'Avançar em parcerias com escolas conveniadas e escolas cívico-militares.', fonte: P.zema },
     redes: { v: -2, trecho: 'Vedar a exclusão de perfis e a moderação de opiniões pelas plataformas, "inclusive por determinação judicial".', fonte: P.zema },
+    clt: { v: 1, trecho: 'Permitir contratos e pagamentos diários, semanais ou quinzenais.', fonte: P.zema },
     stf: { v: 2, trecho: '"Limitar o poder do Supremo", com mais requisitos para indicação e fiscalização pelo Senado.', fonte: P.zema },
     anistia: {
       v: 2,
@@ -141,15 +143,11 @@ export const POSICOES: Record<string, Partial<Record<string, Posicao>>> = {
   '280002551547': {
     stf: { v: 2, trecho: 'Mandato de oito anos para os ministros do STF.', fonte: P.cury },
     bolsaFamilia: { v: 1, trecho: 'Bolsa Família valorizado como "renda geral", sem punir quem assinar carteira ou abrir empresa.', fonte: P.cury },
-    cotas: {
-      v: -1,
-      trecho: 'Não propõe ações afirmativas e trata a desigualdade pelo empreendedorismo.',
-      fonte: imprensa('Gênero e Número: planos dos presidenciáveis', 'https://www.generonumero.media/artigos/planos-dos-presidenciaveis-2026/'),
-    },
   },
   // Hertz Dias (PSTU)
   '280002541457': {
     fim6x1: { v: 2, trecho: 'Jornada 4x3 sem redução salarial e revogação das reformas trabalhista e previdenciária.', fonte: P.hertz },
+    clt: { v: -2, trecho: 'Revogação das reformas trabalhista e previdenciária.', fonte: P.hertz },
     aborto: { v: 2, trecho: '"Aborto legal, seguro e gratuito pelo SUS."', fonte: P.hertz },
     drogas: { v: 2, trecho: '"Descriminalização das drogas e revogação da Lei Antidrogas."', fonte: P.hertz },
     maioridade: { v: -2, trecho: '"Contra a redução da maioridade penal."', fonte: P.hertz },
@@ -160,7 +158,6 @@ export const POSICOES: Record<string, Partial<Record<string, Posicao>>> = {
   '280002538811': {
     fim6x1: { v: 2, trecho: '"Fim imediato da escala 6x1 e estabelecimento da escala 4x3."', fonte: P.samara },
     aborto: { v: 2, trecho: '"Descriminalização e legalização do aborto."', fonte: P.samara },
-    drogas: { v: 1, trecho: 'Defende a revisão das políticas de combate às drogas.', fonte: BAND_ABORTO },
     maioridade: { v: -2, trecho: '"Não à redução da maioridade penal."', fonte: P.samara },
     privatizacao: { v: -2, trecho: 'Contra "a privatização do patrimônio público".', fonte: P.samara },
     taxarRicos: { v: 2, trecho: '"Imposto sobre as grandes fortunas e progressivo. Quem ganha mais, paga mais."', fonte: P.samara },
@@ -242,7 +239,6 @@ export const POSICOES: Record<string, Partial<Record<string, Posicao>>> = {
     pedagio: { v: -2, trecho: '"Fim dos pedágios e a reversão dos processos de privatização das rodovias!"', fonte: P.sodre },
     tarifaZero: { v: 2, trecho: '"Redução da tarifa, rumo à tarifa zero."', fonte: P.sodre },
     civicoSC: { v: -2, trecho: '"Fim das escolas cívico militares!"', fonte: P.sodre },
-    desmilitarizar: { v: 2, trecho: '"Desmilitarização da Polícia Militar!"', fonte: P.sodre },
   },
   // Marcelo Brigadeiro (Missão)
   '240002544118': {
