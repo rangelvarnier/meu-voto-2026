@@ -140,3 +140,4 @@ button.nome:hover { text-decoration: underline; }
 .comparacao td.neg.forte { background: color-mix(in srgb, var(--bad) 26%, transparent); }
 .comparacao td.nada { color: var(--muted); }
 .linha-afinidade td b { font-size: 1.3rem; }
+.linha-cobertura td a, .comparacao td.nada a { display: block; }

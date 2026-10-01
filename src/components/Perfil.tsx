@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { TEMAS } from '../data/temas'
 import { PROPOSTAS, URL_DIVULGACAND } from '../data/propostas'
 import { VOTOS_6X1, FONTE_VOTOS_6X1 } from '../data/posicoes'
-import { candidatoPorSq, posicoesDe, ROTULO_CARGO, type Respostas } from '../lib/match'
+import { candidatoPorSq, cobertura, posicoesDe, ROTULO_CARGO, type Respostas } from '../lib/match'
+import { urlSugerirFonte } from '../lib/sugestao'
 import { OPCOES, ROTULO_CANDIDATO } from '../lib/opcoes'
 import { Estrela } from './Estrela'
 
@@ -31,6 +32,7 @@ export function Perfil({ sq, respostas, onFechar }: Props) {
   const propostas = PROPOSTAS[c.sq]
   const posicoes = posicoesDe(c, false)
   const temasComPosicao = TEMAS.filter((t) => posicoes[t.id])
+  const cob = cobertura(c, false)
   const voto = VOTOS_6X1[c.sq]
   const entregaPlano = c.cargo === 'presidente' || c.cargo === 'governador'
 
@@ -147,6 +149,9 @@ export function Perfil({ sq, respostas, onFechar }: Props) {
 
           <section>
             <h3>Posições nos temas do quiz</h3>
+            <p className="nota">
+              Posição registrada em {cob.com} de {cob.total} temas {c.cargo === 'governador' || c.cargo === 'deputado_estadual' ? 'estaduais' : 'nacionais'}.
+            </p>
             {temasComPosicao.length === 0 && <p className="nota">Não encontramos posição pública neste candidato para os temas do quiz.</p>}
             {temasComPosicao.map((t) => {
               const p = posicoes[t.id]
@@ -165,6 +170,24 @@ export function Perfil({ sq, respostas, onFechar }: Props) {
                 </div>
               )
             })}
+            {cob.faltando.length > 0 && (
+              <>
+                <h4>Sem posição encontrada</h4>
+                <p className="nota">
+                  Conhece um trecho do plano, um voto ou uma declaração noticiada sobre algum destes temas? Envie a fonte
+                  e a gente confere antes de incluir.
+                </p>
+                <ul className="chips">
+                  {cob.faltando.map((t) => (
+                    <li key={t.id}>
+                      <a href={urlSugerirFonte(c, t)} target="_blank" rel="noreferrer">
+                        {t.titulo} · sugerir fonte
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </section>
         </div>
       </div>

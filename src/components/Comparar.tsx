@@ -3,22 +3,26 @@ import { useApp } from '../lib/contexto'
 import {
   calcular,
   candidatoPorSq,
+  cobertura,
   estimativaPorPartido,
+  MIN_TEMAS_COMPARADOS,
   posicoesDe,
   ROTULO_CARGO,
   type Candidato,
   type Respostas,
 } from '../lib/match'
 import { OPCOES, ROTULO_CANDIDATO } from '../lib/opcoes'
+import { urlSugerirFonte } from '../lib/sugestao'
 import { Estrela } from './Estrela'
 
 const rotuloEleitor = (v: number) => OPCOES.find((o) => o.v === v)?.rotulo ?? '—'
+const ehMajoritario = (c: Candidato) => c.cargo === 'presidente' || c.cargo === 'governador' || c.cargo === 'senador'
 const classe = (v: number) => (v > 0 ? 'pos' : 'neg') + (Math.abs(v) === 2 ? ' forte' : '')
 
 function afinidade(c: Candidato, respostas: Respostas): { texto: string; nota?: string } {
-  if (c.cargo === 'presidente' || c.cargo === 'governador' || c.cargo === 'senador') {
+  if (ehMajoritario(c)) {
     const r = calcular(c, respostas, false)
-    return r.afinidade != null && r.comparados >= 3
+    return r.afinidade != null && r.comparados >= MIN_TEMAS_COMPARADOS
       ? { texto: `${r.afinidade}%`, nota: `${r.comparados} temas` }
       : { texto: '—', nota: 'poucos dados' }
   }
@@ -49,7 +53,8 @@ export function Comparar({ respostas }: { respostas: Respostas }) {
       <h1>Comparar favoritos</h1>
       <p className="nota">
         {cands.length} {cands.length === 1 ? 'candidato' : 'candidatos'}. Só aparecem os temas em que pelo menos um deles
-        tem posição registrada, e “—” significa que não encontramos posição pública. Toque no nome para abrir o perfil.
+        tem posição registrada, e “—” significa que não encontramos posição pública. Se você conhece uma fonte (plano,
+        voto ou declaração noticiada), use “sugerir”. Toque no nome para abrir o perfil.
       </p>
 
       <div className="tabela-rolagem">
@@ -83,6 +88,20 @@ export function Comparar({ respostas }: { respostas: Respostas }) {
                 )
               })}
             </tr>
+            <tr className="linha-cobertura">
+              <th scope="row">Temas com posição</th>
+              {cands.map((c) => {
+                const cob = cobertura(c, false)
+                return (
+                  <td key={c.sq}>
+                    <b>{ehMajoritario(c) ? `${cob.com} de ${cob.total}` : cob.com}</b>
+                    <a href={urlSugerirFonte(c)} target="_blank" rel="noreferrer">
+                      sugerir fonte
+                    </a>
+                  </td>
+                )
+              })}
+            </tr>
           </thead>
           <tbody>
             {temas.map((t) => (
@@ -103,7 +122,12 @@ export function Comparar({ respostas }: { respostas: Respostas }) {
                           </a>
                         </>
                       ) : (
-                        '—'
+                        <>
+                          —
+                          <a href={urlSugerirFonte(c, t)} target="_blank" rel="noreferrer" title="Conhece uma fonte? Sugira">
+                            sugerir
+                          </a>
+                        </>
                       )}
                     </td>
                   )

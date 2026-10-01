@@ -1,0 +1,50 @@
+name: Sugerir posição de candidato
+description: Indique uma fonte com a posição de um candidato num tema do quiz.
+title: "Posição: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Só entram posições com fonte verificável: o plano de governo registrado no TSE, um voto registrado
+        (Câmara, Senado, Assembleia) ou uma declaração noticiada pela imprensa. Nada é deduzido por partido ou ideologia.
+  - type: input
+    id: candidato
+    attributes:
+      label: Candidato
+      description: Nome, cargo e partido.
+    validations:
+      required: true
+  - type: input
+    id: tema
+    attributes:
+      label: Tema do quiz
+    validations:
+      required: true
+  - type: dropdown
+    id: posicao
+    attributes:
+      label: Posição do candidato sobre a afirmação do tema
+      options:
+        - Concorda totalmente
+        - Concorda
+        - Discorda
+        - Discorda totalmente
+    validations:
+      required: true
+  - type: textarea
+    id: trecho
+    attributes:
+      label: Trecho
+      description: Citação literal da fala, do plano ou a descrição do voto.
+    validations:
+      required: true
+  - type: input
+    id: fonte
+    attributes:
+      label: Link da fonte
+    validations:
+      required: true
+  - type: input
+    id: data
+    attributes:
+      label: Data da declaração ou do voto
